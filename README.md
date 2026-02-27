@@ -15,7 +15,7 @@
 <p align="center">
   <a href="https://mdyao.github.io/">Mingde Yao</a><sup>1,5</sup>&nbsp;&nbsp;
   <a href="https://zhiyuanyou.github.io/">Zhiyuan You</a><sup>1,6</sup>&nbsp;&nbsp;
-  Tam-King Man<sup>4</sup>&nbsp;&nbsp;
+  King-Man Tam<sup>4</sup>&nbsp;&nbsp;
   Menglu Wang<sup>3</sup>&nbsp;&nbsp;
   <a href="https://tianfan.info/">Tianfan Xue</a><sup>1,2,5</sup>
 </p>
@@ -166,7 +166,7 @@ PhotoAgent refines images over multiple iterations, with each round building on 
 ```bibtex
 @article{yao2025photoagent,
   title   = {PhotoAgent: Agentic Photo Editing with Exploratory Visual Aesthetic Planning},
-  author  = {Yao, Mingde and You, Zhiyuan and Man, Tam-King and Wang, Menglu and Xue, Tianfan},
+  author  = {Yao, Mingde and You, Zhiyuan and Tam, King-Man and Wang, Menglu and Xue, Tianfan},
   year    = {2025}
 }
 ```
