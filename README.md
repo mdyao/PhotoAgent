@@ -6,7 +6,7 @@ PhotoAgent is an autonomous photo editing agent that formulates image editing as
 
 ## Authors
 
-[Mingde Yao](https://mdyao.github.io/)<sup>1,5</sup>, [Zhiyuan You](https://zhiyuanyou.github.io/)<sup>1,6</sup>, Tam-King Man<sup>4</sup>, Menglu Wang<sup>3</sup>, [Tianfan Xue](https://tianfan.info/)<sup>1,2,5</sup>
+[Mingde Yao](https://mdyao.github.io/)<sup>1,5</sup>, [Zhiyuan You](https://zhiyuanyou.github.io/)<sup>1,6</sup>, King-Man Tam<sup>4</sup>, Menglu Wang<sup>3</sup>, [Tianfan Xue](https://tianfan.info/)<sup>1,2,5</sup>
 
 <sup>1</sup>Multimedia Laboratory, The Chinese University of Hong Kong  
 <sup>2</sup>Shanghai AI Laboratory  
