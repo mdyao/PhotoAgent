@@ -14,7 +14,7 @@
 
 <p align="center">
   <a href="https://mdyao.github.io/">Mingde Yao</a><sup>1,5</sup>&nbsp;&nbsp;
-  <a href="https://zhiyuanyou.github.io/">Zhiyuan You</a><sup>1,6</sup>&nbsp;&nbsp;
+  <a href="https://zhiyuanyou.github.io/">Zhiyuan You</a><sup>1</sup>&nbsp;&nbsp;
   King-Man Tam<sup>4</sup>&nbsp;&nbsp;
   Menglu Wang<sup>3</sup>&nbsp;&nbsp;
   <a href="https://tianfan.info/">Tianfan Xue</a><sup>1,2,5</sup>
@@ -25,8 +25,7 @@
   <sup>2</sup>Shanghai AI Lab&nbsp;&nbsp;
   <sup>3</sup>USTC&nbsp;&nbsp;
   <sup>4</sup>Institute of Science Tokyo&nbsp;&nbsp;
-  <sup>5</sup>CPII InnoHK&nbsp;&nbsp;
-  <sup>6</sup>SIAT, CAS
+  <sup>5</sup>CPII InnoHK
 </p>
 
 <p align="center">
