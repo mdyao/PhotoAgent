@@ -231,9 +231,7 @@ body {
 .btn-coming {
   cursor: default;
   pointer-events: none;
-  border-color: rgba(99, 102, 241, 0.45);
-  color: rgba(255, 255, 255, 0.7);
-  border-style: dashed;
+  opacity: 0.55;
 }
 
 /* Hero */
