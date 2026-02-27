@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a24"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#bg)"/>
+  <text x="400" y="200" font-family="system-ui,sans-serif" font-size="18" fill="#9898a8" text-anchor="middle">PhotoAgent figure placeholder</text>
+  <text x="400" y="228" font-family="system-ui,sans-serif" font-size="14" fill="#6b6b7b" text-anchor="middle">Replace with paper figures (e.g. fig1-crop.pdf ’ .png)</text>
+</svg>

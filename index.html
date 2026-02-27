@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhotoAgent — Agentic Photo Editing with Exploratory Visual Aesthetic Planning</title>
+
+  <!-- SEO meta -->
+  <meta name="description" content="PhotoAgent is an autonomous photo editing agent that plans, executes, and evaluates multi-step edits driven by aesthetic intent. It leverages MCTS-based exploratory planning, GPT-Image-1, Flux.1 Kontext, Step1X-Edit, and a UGC reward model to produce professional-quality results with one click." />
+  <meta name="keywords" content="PhotoAgent, autonomous image editing, agentic photo editing, aesthetic planning, MCTS image editing, multi-step photo editing, AI photo editor, GPT-Image-1 editing, Flux Kontext, Step1X-Edit, Nano Banana, ZImage, UGC-Edit dataset, photo editing agent, computational photography, visual aesthetic planning, closed-loop editing, Mingde Yao, Tianfan Xue, CUHK, Shanghai AI Lab" />
+  <meta name="author" content="Mingde Yao, Zhiyuan You, Tam-King Man, Menglu Wang, Tianfan Xue" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <link rel="canonical" href="https://github.com/mdyao/PhotoAgent" />
+
+  <!-- Open Graph (Facebook, LinkedIn, Discord, etc.) -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="PhotoAgent — Agentic Photo Editing with Exploratory Visual Aesthetic Planning" />
+  <meta property="og:description" content="An autonomous editing agent that reasons about aesthetic intent, plans multi-step edits via tree search, and iteratively refines photos — no step-by-step prompts needed." />
+  <meta property="og:image" content="images/teaser.jpg" />
+  <meta property="og:url" content="https://github.com/mdyao/PhotoAgent" />
+  <meta property="og:site_name" content="PhotoAgent Project Page" />
+  <meta property="article:author" content="Mingde Yao" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="PhotoAgent — Autonomous Agentic Photo Editing" />
+  <meta name="twitter:description" content="One goal, one click — PhotoAgent autonomously plans and executes professional photo edits using MCTS-based aesthetic planning." />
+  <meta name="twitter:image" content="images/teaser.jpg" />
+
+  <!-- Structured Data: JSON-LD for search engines & AI agents -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "name": "PhotoAgent: Agentic Photo Editing with Exploratory Visual Aesthetic Planning",
+    "headline": "PhotoAgent: Agentic Photo Editing with Exploratory Visual Aesthetic Planning",
+    "description": "PhotoAgent is an autonomous photo editing system that formulates image editing as a long-horizon decision-making problem. It reasons over user aesthetic intent, plans multi-step editing actions via Monte Carlo Tree Search, and iteratively refines results through closed-loop execution with memory and visual feedback. The system integrates diverse editing tools including GPT-Image-1, Flux.1 Kontext, Step1X-Edit, Nano Banana, and ZImage, and introduces UGC-Edit, an aesthetic evaluation benchmark of 7,000 user-generated photos with a learned reward model.",
+    "image": "images/teaser.jpg",
+    "author": [
+      {"@type": "Person", "name": "Mingde Yao", "url": "https://mdyao.github.io/", "affiliation": {"@type": "Organization", "name": "The Chinese University of Hong Kong"}},
+      {"@type": "Person", "name": "Zhiyuan You", "url": "https://zhiyuanyou.github.io/", "affiliation": {"@type": "Organization", "name": "The Chinese University of Hong Kong"}},
+      {"@type": "Person", "name": "Tam-King Man", "affiliation": {"@type": "Organization", "name": "Institute of Science Tokyo"}},
+      {"@type": "Person", "name": "Menglu Wang", "affiliation": {"@type": "Organization", "name": "University of Science and Technology of China"}},
+      {"@type": "Person", "name": "Tianfan Xue", "url": "https://tianfan.info/", "affiliation": {"@type": "Organization", "name": "The Chinese University of Hong Kong"}}
+    ],
+    "keywords": ["PhotoAgent", "autonomous image editing", "agentic photo editing", "aesthetic planning", "MCTS", "Monte Carlo Tree Search", "multi-step editing", "closed-loop editing", "GPT-Image-1", "Flux.1 Kontext", "Step1X-Edit", "Nano Banana", "ZImage", "UGC-Edit", "reward model", "computational photography", "user-generated content", "visual aesthetic planning"],
+    "about": [
+      {"@type": "Thing", "name": "Artificial Intelligence"},
+      {"@type": "Thing", "name": "Computer Vision"},
+      {"@type": "Thing", "name": "Image Editing"},
+      {"@type": "Thing", "name": "Computational Photography"}
+    ],
+    "url": "https://github.com/mdyao/PhotoAgent",
+    "codeRepository": "https://github.com/mdyao/PhotoAgent",
+    "isAccessibleForFree": true
+  }
+  </script>
+
+  <link rel="icon" type="image/jpeg" href="images/photoagent_icon.jpg" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="header">
+    <nav class="nav container">
+      <a href="#" class="logo">
+        <img src="images/photoagent_icon.jpg" alt="PhotoAgent icon" class="logo-icon" />
+        <span class="logo-text">PhotoAgent</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#paradigm">Paradigm</a></li>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#dataset">Dataset</a></li>
+        <li><a href="#paper">Paper</a></li>
+      </ul>
+      <a href="https://github.com/mdyao/PhotoAgent" class="btn btn-primary" target="_blank" rel="noopener">Code & Demo</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container hero-content">
+        <p class="hero-badge">Autonomous Image Editing</p>
+        <div class="hero-brand">
+          <img src="images/photoagent_icon.jpg" alt="PhotoAgent icon" class="hero-icon" />
+          <h1 class="hero-title">
+            <span class="gradient-text">PhotoAgent</span>
+          </h1>
+        </div>
+        <p class="hero-tagline">Where <strong>Aesthetic Intent</strong> Becomes <strong>Visual Reality</strong></p>
+        <p class="hero-authors"><a href="https://mdyao.github.io/" target="_blank" rel="noopener">Mingde Yao</a><sup>1,5</sup>, <a href="https://zhiyuanyou.github.io/" target="_blank" rel="noopener">Zhiyuan You</a><sup>1,6</sup>, Tam-King Man<sup>4</sup>, Menglu Wang<sup>3</sup>, <a href="https://tianfan.info/" target="_blank" rel="noopener">Tianfan Xue</a><sup>1,2,5</sup></p>
+        <p class="hero-affiliations"><sup>1</sup>Multimedia Laboratory, The Chinese University of Hong Kong&ensp;<sup>2</sup>Shanghai AI Laboratory<br /><sup>3</sup>University of Science and Technology of China&ensp;<sup>4</sup>Institute of Science Tokyo<br /><sup>5</sup>CPII under InnoHK&ensp;<sup>6</sup>Shenzhen Institute of Advanced Technology, Chinese Academy of Sciences</p>
+        <p class="hero-subtitle">
+          PhotoAgent turns photos into professionally edited results through exploratory visual aesthetic planning—no step-by-step prompts required. One goal, one click, autonomous enhancement.
+        </p>
+        <div class="hero-actions">
+          <a href="https://arxiv.org/abs/2602.22809" class="btn btn-primary btn-lg" target="_blank" rel="noopener">Paper (arXiv)</a>
+          <a href="#" class="btn btn-outline btn-lg btn-coming">Code (Coming)</a>
+          <a href="#" class="btn btn-outline btn-lg btn-coming">HuggingFace Demo (Coming)</a>
+          <a href="#" class="btn btn-outline btn-lg btn-coming">Dataset (Coming)</a>
+        </div>
+        <div class="hero-visual">
+          <img src="images/teaser.jpg" alt="PhotoAgent teaser — autonomous editing results at a glance" class="hero-img" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Paradigm — cinematic showcase -->
+    <section id="paradigm" class="section paradigm-section">
+      <div class="paradigm-bg-glow" aria-hidden="true"></div>
+      <div class="container">
+        <p class="paradigm-badge">Editing, Reimagined</p>
+        <h2 class="section-title paradigm-title">
+          Stop Editing Manually.<br />Let the <span class="gradient-text">Agent</span> Handle It.
+        </h2>
+        <p class="section-lead paradigm-lead">
+          Traditional photo editing demands expertise, endless parameter tuning, and exhausting trial-and-error.
+          PhotoAgent replaces this fragile <strong>human-in-the-loop</strong> pipeline with an autonomous
+          <strong>agent-in-the-loop</strong> system — one that perceives, plans, executes, and evaluates
+          like a seasoned professional.
+        </p>
+        <div class="paradigm-showcase">
+          <div class="paradigm-img-wrap">
+            <img src="images/photoagent_loop.png" alt="Human-in-the-loop vs Agent-in-the-loop comparison" class="paradigm-img" />
+          </div>
+        </div>
+        <div class="paradigm-cols">
+          <div class="paradigm-col paradigm-col--pain">
+            <h3 class="paradigm-col-title paradigm-col-title--pain">Human-in-the-loop</h3>
+            <ul class="paradigm-list">
+              <li><strong>Expertise barrier</strong> — Users struggle to translate aesthetic intent into editing operations.</li>
+              <li><strong>Algorithm selection</strong> — Which filter? Which tool? Too many knobs, no guidance.</li>
+              <li><strong>Interaction fatigue</strong> — Endless manual iterations lead to frustration and suboptimal results.</li>
+            </ul>
+          </div>
+          <div class="paradigm-col paradigm-col--agent">
+            <h3 class="paradigm-col-title paradigm-col-title--agent">Agent-in-the-loop</h3>
+            <ul class="paradigm-list">
+              <li><strong>Perceive</strong> — VLM understands the image context and proposes diverse editing actions.</li>
+              <li><strong>Plan</strong> — MCTS explores aesthetic trajectories to find the optimal path.</li>
+              <li><strong>Execute &amp; Evaluate</strong> — Closed-loop feedback ensures quality at every step.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Overview -->
+    <section id="overview" class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">What makes PhotoAgent different</h2>
+        <p class="section-lead">
+          From instruction-following editors to an <strong>autonomous editing agent</strong> that plans, executes, and evaluates—aligned with human aesthetics.
+        </p>
+        <div class="features-grid">
+          <article class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <h3>Closed-loop planning</h3>
+            <p>Perceive–plan–execute–evaluate cycle with memory and visual feedback. No open-loop, single-shot edits.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-icon">🌳</div>
+            <h3>Exploratory aesthetic planning</h3>
+            <p>MCTS-based planner explores editing trajectories and avoids short-sighted or irreversible decisions.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-icon">🛠</div>
+            <h3>Rich toolset</h3>
+            <p>Any existing editing tool can serve as a building block — GPT-Image-1, Flux.1 Kontext, Step1X-Edit, Nano Banana, ZImage, and more. The agent selects and orchestrates the best one for each step.</p>
+          </article>
+          <article class="feature-card">
+            <div class="feature-icon">📐</div>
+            <h3>UGC-oriented evaluation</h3>
+            <p>UGC-Edit dataset and reward model for user-generated photos—evaluation that matches real user preferences.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section id="how-it-works" class="section how-section">
+      <div class="how-bg-glow" aria-hidden="true"></div>
+      <div class="container">
+        <span class="how-badge">Under the Hood</span>
+        <h2 class="section-title how-title">How <span class="gradient-text">PhotoAgent</span> Works</h2>
+        <p class="section-lead how-lead">
+          Four core components form a single closed-loop system — perceiving, planning, executing, and evaluating in continuous cycles until the optimal result emerges.
+        </p>
+
+        <div class="how-steps">
+          <article class="how-card">
+            <div class="how-card-head">
+              <span class="how-card-num">1</span>
+              <div class="how-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </div>
+            </div>
+            <h3 class="how-card-title">Perceiver</h3>
+            <p class="how-card-desc">VLM (e.g. Qwen3-VL) interprets the image and proposes <em>K</em> diverse, atomic editing actions. Supports fully autonomous or user-guided editing.</p>
+            <span class="how-card-tag">Vision-Language Model</span>
+          </article>
+
+          <div class="how-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
+          </div>
+
+          <article class="how-card">
+            <div class="how-card-head">
+              <span class="how-card-num">2</span>
+              <div class="how-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              </div>
+            </div>
+            <h3 class="how-card-title">Planner</h3>
+            <p class="how-card-desc">MCTS explores candidate actions via selection, expansion, simulation, and backpropagation. Selects top-<em>K</em> actions for execution.</p>
+            <span class="how-card-tag">Monte Carlo Tree Search</span>
+          </article>
+
+          <div class="how-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
+          </div>
+
+          <article class="how-card">
+            <div class="how-card-head">
+              <span class="how-card-num">3</span>
+              <div class="how-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </div>
+            </div>
+            <h3 class="how-card-title">Executor</h3>
+            <p class="how-card-desc">Runs selected actions with traditional or generative tools. Retains the highest-scoring result as the next state.</p>
+            <span class="how-card-tag">Tool Orchestration</span>
+          </article>
+
+          <div class="how-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
+          </div>
+
+          <article class="how-card">
+            <div class="how-card-head">
+              <span class="how-card-num">4</span>
+              <div class="how-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+            </div>
+            <h3 class="how-card-title">Evaluator</h3>
+            <p class="how-card-desc">Ensemble of no-reference metrics, CLIP-based and instruction-following scores, plus UGC reward model. Drives re-planning when needed.</p>
+            <span class="how-card-tag">Multi-metric Scoring</span>
+          </article>
+        </div>
+
+        <div class="how-loop-back">
+          <div class="how-loop-line"></div>
+          <div class="how-loop-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+            <span>Closed-loop — iterates until convergence</span>
+          </div>
+        </div>
+
+        <!-- Action Memory & History -->
+        <div class="how-memory">
+          <div class="how-memory-visual">
+            <div class="how-memory-icon-main">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <div class="how-memory-trace" aria-hidden="true">
+              <span class="how-memory-node how-memory-node--done"></span>
+              <span class="how-memory-edge"></span>
+              <span class="how-memory-node how-memory-node--done"></span>
+              <span class="how-memory-edge"></span>
+              <span class="how-memory-node how-memory-node--skip"></span>
+              <span class="how-memory-edge"></span>
+              <span class="how-memory-node how-memory-node--active"></span>
+            </div>
+          </div>
+          <div class="how-memory-body">
+            <h3 class="how-memory-title">Action Memory &amp; History</h3>
+            <p class="how-memory-desc">
+              PhotoAgent maintains a <strong>full editing history</strong> across every iteration. Before proposing new actions, the Perceiver reviews all previously applied operations — preventing redundant edits, avoiding conflicting adjustments, and ensuring each step moves the image toward a genuinely better state.
+            </p>
+            <div class="how-memory-feats">
+              <div class="how-memory-feat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <span>No repeated operations</span>
+              </div>
+              <div class="how-memory-feat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z"/><path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/></svg>
+                <span>Context-aware decisions</span>
+              </div>
+              <div class="how-memory-feat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span>Faster convergence</span>
+              </div>
+              <div class="how-memory-feat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                <span>Conflict-free edits</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scene-Aware Classification -->
+        <div class="how-scenes">
+          <div class="how-scenes-header">
+            <span class="how-scenes-badge">Scene-Aware Design</span>
+            <h3 class="how-scenes-title">Fine-grained <span class="gradient-text">Scene Classification</span></h3>
+            <p class="how-scenes-desc">
+              Not all photos are created equal. PhotoAgent first classifies each input into a fine-grained scene category, then activates a <strong>scene-specific editing strategy</strong> — selecting the most appropriate tools, adjusting aesthetic targets, and tailoring evaluation criteria to match the unique characteristics of each scene type.
+            </p>
+          </div>
+          <div class="how-scenes-grid">
+            <div class="how-scene-card">
+              <div class="how-scene-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <h4 class="how-scene-name">Portrait &amp; People</h4>
+              <p class="how-scene-desc">Skin retouching, facial lighting, background bokeh, and expression-preserving enhancements tailored for human subjects.</p>
+            </div>
+            <div class="how-scene-card">
+              <div class="how-scene-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 110-14h9.5C21 5 23 7 23 9.5S21 14 18.5 14H14"/><path d="M5 5l2 2"/><circle cx="4" cy="12" r="0" fill="currentColor"/><path d="M2 19h4l3-3"/></svg>
+              </div>
+              <h4 class="how-scene-name">Landscape &amp; Nature</h4>
+              <p class="how-scene-desc">Sky replacement, color vibrancy, dynamic range expansion, and atmospheric depth for outdoor scenes.</p>
+            </div>
+            <div class="how-scene-card">
+              <div class="how-scene-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="13" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="20" width="7" height="1" rx="0.5"/></svg>
+              </div>
+              <h4 class="how-scene-name">Urban &amp; Architecture</h4>
+              <p class="how-scene-desc">Perspective correction, structural clarity, night scene lighting, and geometric detail enhancement for cityscapes.</p>
+            </div>
+            <div class="how-scene-card">
+              <div class="how-scene-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+              </div>
+              <h4 class="how-scene-name">Food &amp; Product</h4>
+              <p class="how-scene-desc">Color saturation, texture sharpening, warm tone grading, and appetizing presentation for close-up subjects.</p>
+            </div>
+            <div class="how-scene-card">
+              <div class="how-scene-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+              </div>
+              <h4 class="how-scene-name">Low-light &amp; Night</h4>
+              <p class="how-scene-desc">Noise reduction, exposure recovery, tone mapping, and light source enhancement for challenging lighting conditions.</p>
+            </div>
+            <div class="how-scene-card">
+              <div class="how-scene-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </div>
+              <h4 class="how-scene-name">Indoor &amp; Still Life</h4>
+              <p class="how-scene-desc">White balance correction, shadow fill, detail enhancement, and ambient lighting adjustment for interior scenes.</p>
+            </div>
+          </div>
+          <p class="how-scenes-footnote">
+            Each scene category activates a <strong>specialized prompt template</strong> and <strong>tool preference profile</strong>, ensuring the agent's editing strategy is never generic — it is always adapted to the content at hand.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section id="results" class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">Results</h2>
+        <p class="section-lead">
+          State-of-the-art on instruction adherence and visual quality; preferred in user studies.
+        </p>
+
+        <!-- Aesthetic-driven editing philosophy -->
+        <div class="aesthetic-intro">
+          <div class="aesthetic-intro-header">
+            <span class="aesthetic-intro-badge">Intent-Preserving &middot; Aesthetics-First</span>
+            <h3 class="aesthetic-intro-title">
+              One Photo, <span class="gradient-text">Many Possibilities</span>
+            </h3>
+            <p class="aesthetic-intro-desc">
+              Rather than applying a fixed recipe, PhotoAgent reasons about the <strong>aesthetic intent</strong> behind each image and autonomously selects the most suitable operations.
+              It respects the photographer's original narrative while unlocking creative transformations that elevate visual quality — all without explicit step-by-step instructions.
+            </p>
+          </div>
+
+          <div class="aesthetic-ops-grid">
+            <div class="aesthetic-op-card" data-op="recompose">
+              <div class="aesthetic-op-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+              </div>
+              <h4 class="aesthetic-op-name">Recompose</h4>
+              <p class="aesthetic-op-desc">Intelligent cropping and framing guided by the rule of thirds, leading lines, and subject emphasis — tightening the visual story.</p>
+            </div>
+
+            <div class="aesthetic-op-card" data-op="bokeh">
+              <div class="aesthetic-op-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="7" stroke-dasharray="2 3"/></svg>
+              </div>
+              <h4 class="aesthetic-op-name">Depth &amp; Bokeh</h4>
+              <p class="aesthetic-op-desc">Selectively blurs backgrounds or foregrounds to create cinematic depth-of-field, directing attention to what matters most.</p>
+            </div>
+
+            <div class="aesthetic-op-card" data-op="color">
+              <div class="aesthetic-op-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="10" r="6"/><circle cx="16" cy="10" r="6"/><circle cx="12" cy="16" r="6"/></svg>
+              </div>
+              <h4 class="aesthetic-op-name">Color &amp; Tone</h4>
+              <p class="aesthetic-op-desc">Refines white balance, contrast curves, and color grading to evoke the right mood — warm golden-hour warmth, cool twilight serenity, or vivid punch.</p>
+            </div>
+
+            <div class="aesthetic-op-card" data-op="content">
+              <div class="aesthetic-op-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6l-4.9 3.6 1.9-5.8L4 8.8h6.1z"/></svg>
+              </div>
+              <h4 class="aesthetic-op-name">Content Enhancement</h4>
+              <p class="aesthetic-op-desc">Subtly enriches scene elements — adding reflections, enhancing textures, or refining details — to amplify the image's storytelling power.</p>
+            </div>
+
+            <div class="aesthetic-op-card" data-op="remove">
+              <div class="aesthetic-op-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              </div>
+              <h4 class="aesthetic-op-name">Distraction Removal</h4>
+              <p class="aesthetic-op-desc">Identifies and removes visual clutter — stray objects, blemishes, unwanted passersby — leaving a cleaner, more focused composition.</p>
+            </div>
+
+            <div class="aesthetic-op-card" data-op="atmosphere">
+              <div class="aesthetic-op-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h2a4 4 0 004-4 4 4 0 014-4h0a4 4 0 014 4"/><path d="M5 19h14"/><path d="M17 15h2a3 3 0 003-3"/><circle cx="18" cy="5" r="1"/><circle cx="21" cy="8" r="0.5"/></svg>
+              </div>
+              <h4 class="aesthetic-op-name">Atmosphere &amp; Dynamics</h4>
+              <p class="aesthetic-op-desc">Injects environmental mood — light rays, mist, motion trails, or luminous particles — breathing life and emotion into static scenes.</p>
+            </div>
+          </div>
+
+          <p class="aesthetic-intro-footnote">
+            Every edit is guided by a single principle: <strong>preserve the photographer's intent</strong> while maximizing aesthetic quality.
+            The agent decides <em>what</em> to do and <em>how far</em> to push each operation — no two photos receive the same treatment.
+          </p>
+        </div>
+
+        <div class="results-io-gallery results-io-gallery--hero">
+          <h3 class="results-io-title">Input / Output examples</h3>
+          <p class="results-io-desc">Click any image to view full size.</p>
+          <div class="results-io-grid">
+            <figure class="results-io-card">
+              <div class="results-io-half"><span class="results-io-label">Input</span><img src="images/results/img1-i.jpg" alt="Input 1" class="results-io-img" /></div>
+              <span class="results-io-arrow">&#x2192;</span>
+              <div class="results-io-half"><span class="results-io-label results-io-label--out">Output</span><img src="images/results/img1-o.jpg" alt="Output 1" class="results-io-img" /></div>
+            </figure>
+            <figure class="results-io-card">
+              <div class="results-io-half"><span class="results-io-label">Input</span><img src="images/results/img2-i.jpg" alt="Input 2" class="results-io-img" /></div>
+              <span class="results-io-arrow">&#x2192;</span>
+              <div class="results-io-half"><span class="results-io-label results-io-label--out">Output</span><img src="images/results/img2-o.jpg" alt="Output 2" class="results-io-img" /></div>
+            </figure>
+            <figure class="results-io-card">
+              <div class="results-io-half"><span class="results-io-label">Input</span><img src="images/results/img3-i.jpg" alt="Input 3" class="results-io-img" /></div>
+              <span class="results-io-arrow">&#x2192;</span>
+              <div class="results-io-half"><span class="results-io-label results-io-label--out">Output</span><img src="images/results/img3-o.jpg" alt="Output 3" class="results-io-img" /></div>
+            </figure>
+            <figure class="results-io-card">
+              <div class="results-io-half"><span class="results-io-label">Input</span><img src="images/results/img4-i.jpg" alt="Input 4" class="results-io-img" /></div>
+              <span class="results-io-arrow">&#x2192;</span>
+              <div class="results-io-half"><span class="results-io-label results-io-label--out">Output</span><img src="images/results/img4-o.jpg" alt="Output 4" class="results-io-img" /></div>
+            </figure>
+            <figure class="results-io-card">
+              <div class="results-io-half"><span class="results-io-label">Input</span><img src="images/results/img5-i.jpg" alt="Input 5" class="results-io-img" /></div>
+              <span class="results-io-arrow">&#x2192;</span>
+              <div class="results-io-half"><span class="results-io-label results-io-label--out">Output</span><img src="images/results/img5-o.jpg" alt="Output 5" class="results-io-img" /></div>
+            </figure>
+            <figure class="results-io-card">
+              <div class="results-io-half"><span class="results-io-label">Input</span><img src="images/results/img6-i.jpg" alt="Input 6" class="results-io-img" /></div>
+              <span class="results-io-arrow">&#x2192;</span>
+              <div class="results-io-half"><span class="results-io-label results-io-label--out">Output</span><img src="images/results/img6-o.jpg" alt="Output 6" class="results-io-img" /></div>
+            </figure>
+            <figure class="results-io-card">
+              <div class="results-io-half"><span class="results-io-label">Input</span><img src="images/results/img7-i.jpg" alt="Input 7" class="results-io-img" /></div>
+              <span class="results-io-arrow">&#x2192;</span>
+              <div class="results-io-half"><span class="results-io-label results-io-label--out">Output</span><img src="images/results/img7-o.jpg" alt="Output 7" class="results-io-img" /></div>
+            </figure>
+            <figure class="results-io-card">
+              <div class="results-io-half"><span class="results-io-label">Input</span><img src="images/results/img8-i.jpg" alt="Input 8" class="results-io-img" /></div>
+              <span class="results-io-arrow">&#x2192;</span>
+              <div class="results-io-half"><span class="results-io-label results-io-label--out">Output</span><img src="images/results/img8-o.jpg" alt="Output 8" class="results-io-img" /></div>
+            </figure>
+            <figure class="results-io-card">
+              <div class="results-io-half"><span class="results-io-label">Input</span><img src="images/results/img9-i.jpg" alt="Input 9" class="results-io-img" /></div>
+              <span class="results-io-arrow">&#x2192;</span>
+              <div class="results-io-half"><span class="results-io-label results-io-label--out">Output</span><img src="images/results/img9-o.jpg" alt="Output 9" class="results-io-img" /></div>
+            </figure>
+            <figure class="results-io-card">
+              <div class="results-io-half"><span class="results-io-label">Input</span><img src="images/results/img10-i.jpg" alt="Input 10" class="results-io-img" /></div>
+              <span class="results-io-arrow">&#x2192;</span>
+              <div class="results-io-half"><span class="results-io-label results-io-label--out">Output</span><img src="images/results/img10-o.jpg" alt="Output 10" class="results-io-img" /></div>
+            </figure>
+            <figure class="results-io-card">
+              <div class="results-io-half"><span class="results-io-label">Input</span><img src="images/results/img11-i.jpg" alt="Input 11" class="results-io-img" /></div>
+              <span class="results-io-arrow">&#x2192;</span>
+              <div class="results-io-half"><span class="results-io-label results-io-label--out">Output</span><img src="images/results/img11-o.jpg" alt="Output 11" class="results-io-img" /></div>
+            </figure>
+            <figure class="results-io-card">
+              <div class="results-io-half"><span class="results-io-label">Input</span><img src="images/results/img12-i.jpg" alt="Input 12" class="results-io-img" /></div>
+              <span class="results-io-arrow">&#x2192;</span>
+              <div class="results-io-half"><span class="results-io-label results-io-label--out">Output</span><img src="images/results/img12-o.jpg" alt="Output 12" class="results-io-img" /></div>
+            </figure>
+          </div>
+        </div>
+
+        <div class="results-metrics">
+          <div class="metric-card">
+            <span class="metric-value">Best</span>
+            <span class="metric-label">CLIP similarity & BRISQUE</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-value">1,017</span>
+            <span class="metric-label">Real photos in editing benchmark</span>
+          </div>
+        </div>
+
+        <!-- Interactive: Editing process over iterations -->
+        <div class="iter-demo">
+          <h3 class="iter-demo-title">Editing process over iterations</h3>
+          <p class="iter-demo-desc">Step through or auto-play to see how PhotoAgent refines the image each round.</p>
+          <div class="iter-viewer">
+            <div class="iter-main">
+              <div class="iter-slides">
+                <div class="iter-slide active" data-iter="0">
+                  <img src="images/intermediate/fig1-1.png" alt="Original — Canton Tower under overcast sky" />
+                  <p class="iter-caption">Original — Overcast sky, flat tones, muted colors</p>
+                </div>
+                <div class="iter-slide" data-iter="1">
+                  <img src="images/intermediate/fig1-2.png" alt="After iteration 1 — color and tone correction" />
+                  <p class="iter-caption">Iteration 1 — Color &amp; tone correction: sky restored to blue, vibrant palette</p>
+                </div>
+                <div class="iter-slide" data-iter="2">
+                  <img src="images/intermediate/fig1-3.png" alt="After iteration 2 — birds added for dynamic atmosphere" />
+                  <p class="iter-caption">Iteration 2 — Atmosphere &amp; dynamics: flying birds inject life and movement</p>
+                </div>
+                <div class="iter-slide" data-iter="3">
+                  <img src="images/intermediate/fig1-4.png" alt="After iteration 3 — refined depth and final color polish" />
+                  <p class="iter-caption">Iteration 3 — Final polish: enhanced depth-of-field, refined color grading</p>
+                </div>
+              </div>
+            </div>
+            <div class="iter-controls">
+              <button type="button" class="iter-btn iter-prev" aria-label="Previous step">← Previous</button>
+              <div class="iter-dots">
+                <button type="button" class="iter-dot active" aria-label="Step 0: Original" data-iter="0"></button>
+                <button type="button" class="iter-dot" aria-label="Step 1" data-iter="1"></button>
+                <button type="button" class="iter-dot" aria-label="Step 2" data-iter="2"></button>
+                <button type="button" class="iter-dot" aria-label="Step 3" data-iter="3"></button>
+              </div>
+              <button type="button" class="iter-btn iter-next" aria-label="Next step">Next →</button>
+            </div>
+            <div class="iter-autoplay">
+              <label class="iter-autoplay-label">
+                <input type="checkbox" class="iter-autoplay-checkbox" /> Auto-play
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Before / After slider -->
+        <div class="compare-demo">
+          <h3 class="compare-demo-title">Before & after</h3>
+          <p class="compare-demo-desc">Drag the slider to compare. Click thumbnails below to switch examples.</p>
+          <div class="compare-slider-wrap" data-before="images/results/img1-i.jpg" data-after="images/results/img1-o.jpg">
+            <div class="compare-after">
+              <img src="images/results/img1-o.jpg" alt="After PhotoAgent" />
+            </div>
+            <div class="compare-before">
+              <img src="images/results/img1-i.jpg" alt="Before" />
+            </div>
+            <input type="range" class="compare-slider" min="0" max="100" value="50" aria-label="Compare before and after" />
+            <div class="compare-divider" aria-hidden="true">
+              <div class="compare-handle">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M6 10l3-4v8l-3-4z" fill="white"/><path d="M14 10l-3-4v8l3-4z" fill="white"/></svg>
+              </div>
+            </div>
+            <span class="compare-label compare-label-before">Before</span>
+            <span class="compare-label compare-label-after">After</span>
+          </div>
+          <div class="compare-thumbs">
+            <button class="compare-thumb active" data-before="images/results/img1-i.jpg" data-after="images/results/img1-o.jpg" aria-label="Example 1">
+              <img src="images/results/img1-i.jpg" alt="Example 1" />
+            </button>
+            <button class="compare-thumb" data-before="images/results/img2-i.jpg" data-after="images/results/img2-o.jpg" aria-label="Example 2">
+              <img src="images/results/img2-i.jpg" alt="Example 2" />
+            </button>
+            <button class="compare-thumb" data-before="images/results/img3-i.jpg" data-after="images/results/img3-o.jpg" aria-label="Example 3">
+              <img src="images/results/img3-i.jpg" alt="Example 3" />
+            </button>
+            <button class="compare-thumb" data-before="images/results/img4-i.jpg" data-after="images/results/img4-o.jpg" aria-label="Example 4">
+              <img src="images/results/img4-i.jpg" alt="Example 4" />
+            </button>
+            <button class="compare-thumb" data-before="images/results/img5-i.jpg" data-after="images/results/img5-o.jpg" aria-label="Example 5">
+              <img src="images/results/img5-i.jpg" alt="Example 5" />
+            </button>
+            <button class="compare-thumb" data-before="images/results/img6-i.jpg" data-after="images/results/img6-o.jpg" aria-label="Example 6">
+              <img src="images/results/img6-i.jpg" alt="Example 6" />
+            </button>
+            <button class="compare-thumb" data-before="images/results/img9-i.jpg" data-after="images/results/img9-o.jpg" aria-label="Example 7">
+              <img src="images/results/img9-i.jpg" alt="Example 7" />
+            </button>
+            <button class="compare-thumb" data-before="images/results/img10-i.jpg" data-after="images/results/img10-o.jpg" aria-label="Example 8">
+              <img src="images/results/img10-i.jpg" alt="Example 8" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dataset -->
+    <section id="dataset" class="section">
+      <div class="container">
+        <h2 class="section-title">UGC-Edit & benchmark</h2>
+        <p class="section-lead">
+          Existing image quality metrics are designed for generic images and ill-suited for user-generated photos. We introduce a comprehensive evaluation framework comprising a UGC-specific preference dataset, a learned aesthetic reward model, and a real-world editing benchmark.
+        </p>
+        <div class="dataset-fig">
+          <img src="images/dataset.png" alt="UGC-Edit dataset construction and reward model training pipeline" />
+          <p class="dataset-fig-caption">Pipeline for constructing UGC-Edit and training the reward model. Source images from LAION and RealQA are classified by Qwen3-VL, filtered by human annotators, and used to train a reward model via GRPO for fine-grained aesthetic scoring.</p>
+        </div>
+        <div class="dataset-cards">
+          <div class="dataset-card">
+            <h3 class="dataset-card-title">UGC-Edit Dataset</h3>
+            <p class="dataset-card-text">~7,000 authentic user-generated photos sourced from LAION Aesthetic and RealQA. A two-stage filtering process—VLM-based classification followed by manual verification—retains only genuine UGC. All aesthetic scores are normalized to a unified 1–5 scale.</p>
+          </div>
+          <div class="dataset-card">
+            <h3 class="dataset-card-title">UGC Reward Model</h3>
+            <p class="dataset-card-text">Initialized from a pretrained VLM (Qwen2.5-VL) and optimized with Group Relative Policy Optimization (GRPO). Learns from relative rankings within image groups, improving robustness to annotation noise and capturing subtle aesthetic cues.</p>
+          </div>
+          <div class="dataset-card">
+            <h3 class="dataset-card-title">Editing Benchmark</h3>
+            <p class="dataset-card-text">1,017 real-world photographs covering portraits, landscapes, urban scenes, food, low-light, and more. Provides a diverse and challenging testbed for end-to-end evaluation of autonomous photo editing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Paper & CTA -->
+    <section id="paper" class="section section-cta">
+      <div class="container">
+        <h2 class="section-title">Paper & resources</h2>
+        <div class="paper-card">
+          <h3>PhotoAgent: Agentic Photo Editing with Exploratory Visual Aesthetic Planning</h3>
+          <p class="paper-authors"><a href="https://mdyao.github.io/" target="_blank" rel="noopener">Mingde Yao</a><sup>1,5</sup>, <a href="https://zhiyuanyou.github.io/" target="_blank" rel="noopener">Zhiyuan You</a><sup>1,6</sup>, Tam-King Man<sup>4</sup>, Menglu Wang<sup>3</sup>, <a href="https://tianfan.info/" target="_blank" rel="noopener">Tianfan Xue</a><sup>1,2,5</sup></p>
+          <p class="paper-affiliations"><sup>1</sup>CUHK Multimedia Lab&ensp;<sup>2</sup>Shanghai AI Lab&ensp;<sup>3</sup>USTC&ensp;<sup>4</sup>Institute of Science Tokyo&ensp;<sup>5</sup>CPII under InnoHK&ensp;<sup>6</sup>SIAT, CAS</p>
+          <div class="paper-links">
+            <a href="https://arxiv.org/abs/2602.22809" class="btn btn-primary" target="_blank" rel="noopener">Paper (arXiv)</a>
+            <a href="#" class="btn btn-outline btn-coming">Code (Coming)</a>
+            <a href="#" class="btn btn-outline btn-coming">HuggingFace Demo (Coming)</a>
+            <a href="#" class="btn btn-outline btn-coming">Dataset (Coming)</a>
+          </div>
+        </div>
+        <p class="cta-text">Project page: <a href="https://github.com/mdyao/PhotoAgent">https://github.com/mdyao/PhotoAgent</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>PhotoAgent — Agentic Photo Editing with Exploratory Visual Aesthetic Planning.</p>
+      <p class="footer-muted">Mingde Yao, Zhiyuan You, Tam-King Man, Menglu Wang, Tianfan Xue &middot; CUHK &middot; Shanghai AI Lab</p>
+    </div>
+  </footer>
+
+  <!-- Visually hidden rich-text abstract for search engines and AI agents (GPT, Gemini, Perplexity, etc.) -->
+  <aside class="sr-only" aria-hidden="true">
+    <h2>PhotoAgent: Agentic Photo Editing with Exploratory Visual Aesthetic Planning</h2>
+    <p>PhotoAgent is an autonomous photo editing agent developed by Mingde Yao, Zhiyuan You, Tam-King Man, Menglu Wang, and Tianfan Xue at The Chinese University of Hong Kong (CUHK) Multimedia Laboratory, Shanghai AI Laboratory, USTC, Institute of Science Tokyo, CPII under InnoHK, and SIAT CAS.</p>
+    <p>PhotoAgent formulates autonomous image editing as a long-horizon decision-making problem. It reasons over user aesthetic intent, plans multi-step editing actions via Monte Carlo Tree Search (MCTS), and iteratively refines results through closed-loop execution with memory and visual feedback, without requiring step-by-step user prompts. The system integrates diverse state-of-the-art editing tools — GPT-Image-1, Flux.1 Kontext, Step1X-Edit, Nano Banana, and ZImage — selecting and orchestrating the best tool for each editing step.</p>
+    <p>Key capabilities include: intelligent recomposition and cropping, selective depth-of-field and bokeh effects, color and tone grading, content enhancement and generation, distraction and object removal, and atmospheric effects such as light rays, mist, and dynamic elements. Every edit preserves the photographer's original intent while maximizing aesthetic quality.</p>
+    <p>PhotoAgent introduces UGC-Edit, a dataset of approximately 7,000 real user-generated photos annotated with human aesthetic scores, along with a learned UGC reward model trained via GRPO on Qwen2.5-VL. The editing benchmark contains 1,017 real-world photographs covering portraits, landscapes, urban scenes, food, low-light, and more. In user studies, PhotoAgent achieves 42% preference rate, outperforming GPT-4o (30.2%), ReAct (15.2%), and HuggingGPT (12.6%).</p>
+    <p>Related topics: AI photo editing, autonomous image enhancement, agentic editing, computational photography, visual aesthetic planning, photo retouching AI, one-click photo editing, multi-step image editing, closed-loop planning, Monte Carlo Tree Search for images, aesthetic-driven editing agent, UGC photo quality assessment.</p>
+    <p>Code and demo: https://github.com/mdyao/PhotoAgent</p>
+  </aside>
+  <script src="js/main.js"></script>
+</body>
+</html>
