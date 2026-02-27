@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://mdyao.github.io/PhotoAgent/"><img src="https://img.shields.io/badge/Project-Page-blue?style=for-the-badge&logo=googlechrome&logoColor=white" /></a>&nbsp;
-  <a href="#"><img src="https://img.shields.io/badge/arXiv-Paper-b31b1b?style=for-the-badge&logo=arxiv&logoColor=white" /></a>&nbsp;
+  <a href="https://arxiv.org/abs/2602.22809"><img src="https://img.shields.io/badge/arXiv-Paper-b31b1b?style=for-the-badge&logo=arxiv&logoColor=white" /></a>&nbsp;
   <a href="#"><img src="https://img.shields.io/badge/%F0%9F%A4%97-HuggingFace-yellow?style=for-the-badge" /></a>&nbsp;
   <a href="#"><img src="https://img.shields.io/badge/Dataset-Coming-green?style=for-the-badge&logo=databricks&logoColor=white" /></a>
 </p>
