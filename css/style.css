@@ -343,7 +343,7 @@ body {
 }
 
 .hero-affiliations {
-  font-size: 0.95rem;
+  font-size: 1.3rem;
   color: var(--text-muted);
   max-width: 720px;
   margin: 0 auto 28px;
