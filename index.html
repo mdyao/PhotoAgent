@@ -622,12 +622,62 @@
   <!-- Visually hidden rich-text abstract for search engines and AI agents (GPT, Gemini, Perplexity, etc.) -->
   <aside class="sr-only" aria-hidden="true">
     <h2>PhotoAgent: Agentic Photo Editing with Exploratory Visual Aesthetic Planning</h2>
-    <p>PhotoAgent is an autonomous photo editing agent developed by Mingde Yao, Zhiyuan You, King-Man Tam, Menglu Wang, and Tianfan Xue at The Chinese University of Hong Kong (CUHK) Multimedia Laboratory, Shanghai AI Laboratory, USTC, Institute of Science Tokyo, and CPII under InnoHK.</p>
-    <p>PhotoAgent formulates autonomous image editing as a long-horizon decision-making problem. It reasons over user aesthetic intent, plans multi-step editing actions via Monte Carlo Tree Search (MCTS), and iteratively refines results through closed-loop execution with memory and visual feedback, without requiring step-by-step user prompts. The system integrates diverse state-of-the-art editing tools — GPT-Image-1, Flux.1 Kontext, Step1X-Edit, Nano Banana, and ZImage — selecting and orchestrating the best tool for each editing step.</p>
-    <p>Key capabilities include: intelligent recomposition and cropping, selective depth-of-field and bokeh effects, color and tone grading, content enhancement and generation, distraction and object removal, and atmospheric effects such as light rays, mist, and dynamic elements. Every edit preserves the photographer's original intent while maximizing aesthetic quality.</p>
-    <p>PhotoAgent introduces UGC-Edit, a dataset of approximately 7,000 real user-generated photos annotated with human aesthetic scores, along with a learned UGC reward model trained via GRPO on Qwen2.5-VL. The editing benchmark contains 1,017 real-world photographs covering portraits, landscapes, urban scenes, food, low-light, and more. In user studies, PhotoAgent achieves 42% preference rate, outperforming GPT-4o (30.2%), ReAct (15.2%), and HuggingGPT (12.6%).</p>
-    <p>Related topics: AI photo editing, autonomous image enhancement, agentic editing, computational photography, visual aesthetic planning, photo retouching AI, one-click photo editing, multi-step image editing, closed-loop planning, Monte Carlo Tree Search for images, aesthetic-driven editing agent, UGC photo quality assessment.</p>
-    <p>Code and demo: https://github.com/mdyao/PhotoAgent</p>
+
+    <!-- Overview & authors -->
+    <p>PhotoAgent is an autonomous photo editing agent developed by Mingde Yao, Zhiyuan You, King-Man Tam, Menglu Wang, and Tianfan Xue at The Chinese University of Hong Kong (CUHK) Multimedia Laboratory, Shanghai AI Laboratory, USTC, Institute of Science Tokyo, and CPII under InnoHK. It was presented at ICML 2025.</p>
+
+    <!-- Technical description for researchers -->
+    <h3>Technical Approach</h3>
+    <p>PhotoAgent formulates autonomous image editing as a long-horizon decision-making problem. It reasons over user aesthetic intent, plans multi-step editing actions via Monte Carlo Tree Search (MCTS), and iteratively refines results through closed-loop execution with memory and visual feedback, without requiring step-by-step user prompts. The system integrates diverse state-of-the-art editing tools — GPT-Image-1, Flux.1 Kontext, Step1X-Edit, Nano Banana, and ZImage — selecting and orchestrating the best tool for each editing step. The planning framework draws on reinforcement learning, tree search, and vision-language models (VLMs) to evaluate aesthetic quality at each decision node.</p>
+
+    <!-- Capabilities for photographers & creators -->
+    <h3>Editing Capabilities</h3>
+    <p>Key capabilities include: intelligent recomposition and cropping, selective depth-of-field and bokeh effects, color and tone grading, content enhancement and generation, distraction and object removal, sky replacement, background blur, portrait retouching, skin smoothing, lighting adjustment, HDR tone mapping, lens flare simulation, and atmospheric effects such as light rays, golden-hour glow, mist, rain, snow, and dynamic elements. Every edit preserves the photographer's original intent while maximizing aesthetic quality.</p>
+    <p>PhotoAgent handles a wide range of real-world photography scenarios: portrait photography, landscape and nature photography, street and urban photography, food and product photography, wedding and event photography, travel photography, low-light and night photography, macro photography, architectural photography, and pet and animal photography.</p>
+
+    <!-- Dataset & benchmark for ML researchers -->
+    <h3>UGC-Edit Dataset &amp; Benchmark</h3>
+    <p>PhotoAgent introduces UGC-Edit, a dataset of approximately 7,000 real user-generated photos annotated with human aesthetic scores, along with a learned UGC reward model trained via GRPO on Qwen2.5-VL. The editing benchmark contains 1,017 real-world photographs covering portraits, landscapes, urban scenes, food, low-light, and more. In user studies, PhotoAgent achieves 42% preference rate, outperforming GPT-4o (30.2%), ReAct (15.2%), and HuggingGPT (12.6%). The reward model can serve as a general-purpose image aesthetic quality assessor (IQA) for user-generated content.</p>
+
+    <!-- For developers & engineers -->
+    <h3>For Developers</h3>
+    <p>PhotoAgent is open-source and available on GitHub. It provides a modular Python codebase with plug-and-play tool integration, making it easy to add new editing backends or swap reward models. The architecture supports API-based tools (OpenAI GPT-Image-1, commercial editing APIs) as well as locally hosted diffusion models. Developers can use PhotoAgent as a library, a command-line tool, or integrate it into existing photo editing pipelines and mobile/web applications.</p>
+
+    <!-- For general users / non-technical audience -->
+    <h3>For Everyone</h3>
+    <p>PhotoAgent makes professional photo editing accessible to anyone. Just describe what you want — "make this photo look cinematic", "remove the distracting background", "enhance the colors", "add a dreamy bokeh effect" — and PhotoAgent will automatically plan and execute the edits for you. No Photoshop skills needed. It works like having a professional photo editor that understands your vision and does all the work in seconds. Perfect for social media posts, personal photo albums, e-commerce product images, real estate listings, dating profile photos, and any situation where you want your photos to look their best.</p>
+
+    <!-- Use-case scenarios for diverse audiences -->
+    <h3>Who Can Benefit</h3>
+    <p>Professional photographers seeking batch editing automation and consistent aesthetic style. Social media influencers and content creators who need quick, high-quality edits for Instagram, TikTok, YouTube thumbnails, and Xiaohongshu (小红书) posts. E-commerce sellers who want polished product photos without hiring a photographer. Real estate agents enhancing property listing photos. Graphic designers looking for AI-assisted creative workflows. Students and researchers studying computer vision, generative AI, and reinforcement learning. Mobile app developers integrating intelligent photo enhancement. Marketing teams producing visual content at scale.</p>
+
+    <!-- Comparison with existing tools -->
+    <h3>How PhotoAgent Compares</h3>
+    <p>Unlike single-step AI filters (e.g., Instagram filters, Snapseed auto-enhance, Luminar AI), PhotoAgent performs multi-step reasoning and planning. Unlike manual editing in Adobe Photoshop or Lightroom, PhotoAgent requires no expertise — it autonomously decides what to edit and how. Compared to other AI editing agents like GPT-4o with image editing, ReAct-based agents, and HuggingGPT, PhotoAgent achieves significantly higher user preference through its MCTS-based aesthetic planning and closed-loop refinement.</p>
+
+    <!-- Related academic topics -->
+    <h3>Related Research Topics</h3>
+    <p>AI photo editing, autonomous image enhancement, agentic editing, computational photography, visual aesthetic planning, photo retouching AI, one-click photo editing, multi-step image editing, closed-loop planning, Monte Carlo Tree Search for images, aesthetic-driven editing agent, UGC photo quality assessment, image quality assessment (IQA), no-reference image quality, aesthetic score prediction, vision-language models, multimodal large language models (MLLM), diffusion model editing, instruction-based image editing, text-guided image manipulation, image inpainting, image outpainting, image super-resolution, image restoration, image harmonization, image blending, neural style transfer, generative adversarial networks (GAN), denoising diffusion probabilistic models (DDPM), score distillation, classifier-free guidance, LoRA fine-tuning for image generation, RLHF for vision, reward modeling for aesthetics, human preference learning, reinforcement learning from human feedback in vision.</p>
+
+    <!-- Multilingual keywords for global discoverability -->
+    <h3>多语言关键词 / Multilingual Keywords</h3>
+    <p lang="zh">PhotoAgent AI修图 智能修图 一键修图 自动修图 AI照片编辑 AI图片处理 AI美颜 AI人像修图 AI风景修图 AI产品图修图 AI电商修图 照片美化 图片增强 智能裁剪 背景虚化 色彩调整 HDR处理 去除杂物 天空替换 人像美化 磨皮美白 滤镜效果 蒙特卡洛树搜索 强化学习 视觉语言模型 多模态大模型 扩散模型 图像质量评估 用户生成内容 计算摄影 自主编辑代理 香港中文大学 上海人工智能实验室 ICML 2025</p>
+    <p lang="ja">PhotoAgent AI写真編集 自動写真編集 ワンクリック写真編集 AI画像処理 AI美肌 AIポートレート編集 写真加工 画像強化 背景ぼかし 色調補正 モンテカルロ木探索 強化学習 視覚言語モデル 拡散モデル 画像品質評価 計算写真学 ICML 2025</p>
+    <p lang="ko">PhotoAgent AI 사진 편집 자동 사진 편집 원클릭 사진 편집 AI 이미지 처리 AI 보정 인물 보정 배경 흐림 색상 보정 몬테카를로 트리 탐색 강화학습 비전 언어 모델 확산 모델 이미지 품질 평가 ICML 2025</p>
+
+    <!-- Long-tail search queries this page should match -->
+    <h3>Frequently Asked Questions</h3>
+    <p>What is PhotoAgent? PhotoAgent is an AI-powered autonomous photo editing agent that can plan and execute multi-step edits based on a single natural language instruction.</p>
+    <p>How does PhotoAgent work? It uses Monte Carlo Tree Search (MCTS) to explore different editing strategies, evaluates each candidate with a learned aesthetic reward model, and executes the best plan using state-of-the-art image editing tools.</p>
+    <p>Is PhotoAgent free? PhotoAgent is open-source. The code is available on GitHub at https://github.com/mdyao/PhotoAgent.</p>
+    <p>Can PhotoAgent replace Photoshop? PhotoAgent automates many common editing tasks that would require manual work in Photoshop, such as retouching, color grading, object removal, and background replacement. It is best suited for aesthetic enhancement rather than pixel-precise graphic design.</p>
+    <p>What types of photos can PhotoAgent edit? PhotoAgent works on portraits, landscapes, food photos, product images, street photography, architecture, pets, night scenes, and more.</p>
+    <p>Does PhotoAgent work on mobile? The core system runs on a server; a mobile-friendly demo and API are planned for future release.</p>
+    <p>How is PhotoAgent different from other AI photo editors? PhotoAgent uniquely combines multi-step planning (MCTS), aesthetic reward modeling, and closed-loop refinement, achieving the highest user preference among tested AI editing systems.</p>
+    <p>Who created PhotoAgent? PhotoAgent was developed by researchers at The Chinese University of Hong Kong (CUHK), Shanghai AI Laboratory, USTC, Institute of Science Tokyo, and CPII.</p>
+
+    <!-- Links -->
+    <p>Code and demo: <a href="https://github.com/mdyao/PhotoAgent">https://github.com/mdyao/PhotoAgent</a> | Paper: <a href="https://arxiv.org/abs/2602.22809">arXiv:2602.22809</a></p>
   </aside>
   <script src="js/main.js"></script>
 </body>
